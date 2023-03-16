@@ -157,7 +157,32 @@ with model:
         prediction_1 = prediction*0.95
         prediction_2 = prediction*1.05
         
-        st.write(f'The predicted buy price is between: {prediction_1[0]:,.2f} - {prediction_2[0]:,.2f}', font_size=200)
+        # st.write(f'The predicted buy price is between: {prediction_1[0]:,.2f} - {prediction_2[0]:,.2f}', font_size=1500)
+
+        # st.markdown(f'<div style="font-size: 200%; width: 50%; padding: 10px; background-color: lightgray;">The predicted buy price is between: {prediction_1[0]:,.2f} EUR - {prediction_2[0]:,.2f} EUR</div>', unsafe_allow_html=True)
+
+        st.markdown(f"""
+            <style>
+                .result-container {{
+                    background-color: #F4F4F4;
+                    border-radius: 10px;
+                    padding: 20px;
+                    box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+                    font-size: 68px;
+                    width: 80%;
+                    text-align: center;
+                    margin: auto;
+                    margin-top: 50px;
+                    margin-bottom: 50px;
+                }}
+                .result-container p {{
+                    font-size: 30px;
+            </style>
+            <div class="result-container">
+                <p>The predicted buy price is between:</p>
+                <h1>{prediction_1[0]:,.2f} EUR - {prediction_2[0]:,.2f} EUR </h1>
+            </div>
+        """, unsafe_allow_html=True)
 
     # st.button('Predict', on_click=predict)
 

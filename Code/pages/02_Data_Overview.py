@@ -21,11 +21,14 @@ with dataset:
     st.text('This view is only showing 50 random rows from the df')
 
     df = pd.read_csv(r"C:\Users\DavidVicente\Desktop\IronHack\Final_Project\Apartment_Valuator\Data\cleaned_df.csv")
+    df = df.drop(['rent_price'], axis=1)
     df['eurm2'] = round(df['buy_price'] / df['sq_mt_built'],2)
     sum_df = df[['title','Neighborhood_name','District_name','house_type_id','n_rooms','n_bathrooms','floor','eurm2']]
     st.write(df.sample(50))
 
     st.header('Districs by EUR/m2')
+
+
 
         # Group the DataFrame by District_name and calculate the median of eurm2
     df_grouped = df.groupby('District_name').agg({'eurm2': 'median'}).reset_index()
@@ -107,66 +110,65 @@ with dataset:
 
 
 
+    st.header('House Type - Boxplots')
 
-    st.header('House Type EUR/m2')
+    # Define your boxplotly function
+    def boxplotly(df, y_col):
+        fig = px.box(df, x='house_type_id', y=y_col, color='house_type_id', color_discrete_sequence=px.colors.qualitative.Dark24)
+        fig.update_layout(height=500)
+        fig.update_layout(width=1400)
+        st.plotly_chart(fig)
 
+    # Creating a df without outliers
+    q = df['buy_price'].quantile(0.95)
+    df_1 = df[df['buy_price']<q]
 
+    # Create a dictionary to map custom labels to actual variable names
+    data_dict = {'Real Data': df, 'Data Without Outliers': df_1}
 
-    # Group the DataFrame by house_type_id and calculate the median of eurm2
-    df_grouped = df.groupby('house_type_id').agg({'eurm2': 'median'}).reset_index()
+    # Create a selectbox to allow the user to select between the custom labels
+    data_select = st.radio('Select data:', options=list(data_dict.keys()))
 
-    # Sort the DataFrame in descending order based on the median eurm2
-    df_grouped = df_grouped.sort_values('eurm2', ascending=False)
+    col_dict = {'Buy Price':'buy_price','EUR/m2':'eurm2'}
 
-    # Create the bar chart using Plotly Express
-    fig = px.bar(df_grouped, x='house_type_id', y='eurm2',
-                color='house_type_id',
-                color_discrete_sequence=px.colors.qualitative.Dark2,
-                title='Median EUR/m2 by House Type')
+    # Create a radio button to allow the user to select between buy_price and rent_price
+    y_col_select = st.radio('Select y value:', options=list(col_dict.keys()))
 
-    # Set the x-axis title
-    fig.update_xaxes(title_text='House Type')
-
-    # Set the y-axis title
-    fig.update_yaxes(title_text='Median EUR/m2')
-
-    fig.update_layout(width=1400)
-
-
-
-    # Show the plot
-    st.write(fig)
-
-
-    st.header('Price Distribution by House Type')
-
-    fig = px.box(df,x='house_type_id',y='buy_price',color='house_type_id', color_discrete_sequence=px.colors.qualitative.Dark24)
-
-    fig.update_layout(width=1400)
-
-     # Show the plot
-    st.write(fig)
+    # Call your boxplotly function with the selected dataframe and y_col
+    boxplotly(data_dict[data_select], col_dict[y_col_select])
 
 
 
-    st.header('Price Distribution by Number of rooms')
+    st.header('Number of Rooms - Boxplots')
 
-    fig = px.box(df,x='n_rooms',y='buy_price',color='n_rooms', color_discrete_sequence=px.colors.qualitative.Dark24)
+    # Define your boxplotly function
+    def boxplotly(df, y_col):
+        fig = px.box(df, x='n_rooms', y=y_col, color='n_rooms', color_discrete_sequence=px.colors.qualitative.Dark24)
+        fig.update_layout(height=600)
+        fig.update_layout(width=1400)
+        st.plotly_chart(fig)
 
-    fig.update_layout(width=1400)
+    # color='house_type_id',
+
+    # Creating a df without outliers
+    q = df['buy_price'].quantile(0.95)
+    df_1 = df[df['buy_price']<q]
+
+    # Create a dictionary to map custom labels to actual variable names
+    data_dict = {'Real_Data': df, 'Data_Without_Outliers': df_1}
+
+    # Create a selectbox to allow the user to select between the custom labels
+    data_select = st.radio('Select data:', options=list(data_dict.keys()))
+
+    col_dict = {'Buy_Price':'buy_price','EUR/m2_':'eurm2'}
 
     
-    st.write(fig)
+    # Create a radio button to allow the user to select between buy_price and rent_price
+    y_col_select = st.radio('Select y value:', options=list(col_dict.keys()))
 
+    # Call your boxplotly function with the selected dataframe and y_col
+    boxplotly(data_dict[data_select], col_dict[y_col_select])
 
-
-    st.header('Top 10 Most Expensive Apartments')
-
-    sorted_df = df.sort_values(by=['buy_price'],ascending=False)
-
-    sorted_df = sorted_df[['title','buy_price','sq_mt_built','n_rooms','n_bathrooms','house_type_id','District_name','Neighborhood_name']]
-
-    st.write(sorted_df.head(10))
 
 
 
@@ -199,6 +201,8 @@ with dataset:
     st.write(fig)
 
 
+
+    
 
 
 
